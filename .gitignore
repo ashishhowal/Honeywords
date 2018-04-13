@@ -1,2 +1,8 @@
 # VirtualEnv
 hnv/
+
+# Compiled
+*.pyc
+
+# Misc
+*.txt
