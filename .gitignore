@@ -6,3 +6,6 @@ hnv/
 
 # Misc
 *.txt
+*.json
+test.py
+data/

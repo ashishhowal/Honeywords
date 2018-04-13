@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_mysqldb import MySQL
 
 from logger import _DEBUG, dlog
@@ -14,7 +14,7 @@ dbDriver = DBDriver(app, 'localhost', 'root', 'root', 'test')
 @app.route('/index')
 def index():
     cur, rs = dbDriver._exec('''SHOW TABLES''')
-    return str(cur.fetchall())
+    return render_template("index.html", rs=cur.fetchall()[0])
 
 @app.route('/login')
 def login():
