@@ -39,7 +39,7 @@ class Honeywords:
         return decoy.replace('\n','')
 
     # Add user with decoy passwords
-    def addUser(self, password):
+    def addUser(self, username, password):
         # Generate fake passwords list
         pass_list = []
         honey_config = self.config['honeywords']
@@ -51,7 +51,11 @@ class Honeywords:
         pass_list[position] = password
 
         # Perform database operations
-        
+        # First insert into 'users' table, then use the alloted user_id to insert into 'passwords' table
+        db_config = self.config['database']
+        self.db_driver.insert(db_config['user_table'], {'user_name':user})
+
+        # Write logic to insert into password table.
 
         return
 
