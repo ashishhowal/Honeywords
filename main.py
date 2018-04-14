@@ -9,7 +9,7 @@ from honeywords import *
 
 app = Flask(__name__)
 
-dbDriver = DBDriver(app, 'localhost', 'root', 'root', 'honeywords')
+# dbDriver = DBDriver(app, 'localhost', 'root', 'root', 'honeywords')
 
 @app.route('/')
 @app.route('/index')

@@ -48,10 +48,10 @@ class Honeywords:
             pass_list.append(self._generateDecoy(honey_config))
 
         # At random position in the list, add the real password
-        position = random.randint(0,int(honey_config['decoy_count']) + 1)
+        position = random.randint(0, int(honey_config['decoy_count']))
         dlog(pass_list)
-        pass_list[position] = password
         dlog(position)
+        pass_list[position] = password
         dlog(pass_list)
 
         # Perform database operations

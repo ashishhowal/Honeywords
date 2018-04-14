@@ -17,6 +17,7 @@ class DBDriver:
 
     # Returns the cursor and size of resultset
     def _exec(self, query):
+        # self.db.init_app(self.app)
         cursor = self.db.connection.cursor()
         res = cursor.execute(query)
         self.db.connection.commit()
