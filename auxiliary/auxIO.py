@@ -42,6 +42,7 @@ class AuxIO:
         self._secureClose(empty)
         return
 
+    # Add a row to the database
     def add(self, data):
         json_db = self._secureOpen()
         dict_db = json.loads(json_db)
@@ -49,3 +50,14 @@ class AuxIO:
         json_db = json.dumps(dict_db)
         _secureClose(str(json_db))
         return
+
+    # Get a specific row from the database. Returns the entire tuple
+    def get(self, uid):
+        json_db = self._secureOpen()
+        dict_db = json.loads(json_db)
+
+        for d in db:
+            if int(d['uid']) == uid:
+                return d
+
+        return False
