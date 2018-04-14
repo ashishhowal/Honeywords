@@ -5,16 +5,19 @@ from flask_mysqldb import MySQL
 
 from logger import _DEBUG, dlog
 from DBDriver import *
+from honeywords import *
 
 app = Flask(__name__)
 
-dbDriver = DBDriver(app, 'localhost', 'root', 'root', 'test')
+dbDriver = DBDriver(app, 'localhost', 'root', 'root', 'honeywords')
 
 @app.route('/')
 @app.route('/index')
 def index():
-    cur, rs = dbDriver._exec('''SHOW TABLES''')
-    return render_template("index.html", rs=cur.fetchall()[0])
+    # cur, rs = dbDriver._exec('''SHOW TABLES''')
+    honeywords = Honeywords(app, open('config.json', 'r'))
+    honeywords.addUser('swappy','bird')
+    return "Pls work"
 
 @app.route('/login')
 def login():

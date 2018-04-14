@@ -6,6 +6,7 @@ import random
 
 from DBDriver import *
 from auxClient import *
+from logger import *
 
 class Honeywords:
     def __init__(self, app, configFile):
@@ -16,7 +17,7 @@ class Honeywords:
 
         # functionality for aux server
         aux_config = self.config['aux']
-        self.aux_client = AuxClient(aux_config['host'], aux_config['pass'])
+        self.aux_client = AuxClient(aux_config['host'], aux_config['port'])
         return
     
     # Retrieves a random password from the given dictionary
@@ -48,14 +49,23 @@ class Honeywords:
 
         # At random position in the list, add the real password
         position = random.randint(0,int(honey_config['decoy_count']) + 1)
+        dlog(pass_list)
         pass_list[position] = password
+        dlog(position)
+        dlog(pass_list)
 
         # Perform database operations
         # First insert into 'users' table, then use the alloted user_id to insert into 'passwords' table
         db_config = self.config['database']
-        self.db_driver.insert(db_config['user_table'], {'user_name':user})
+        uid = self.db_driver.insert(db_config['user_table'], {'user_name':username}, return_uid=True)
 
         # Write logic to insert into password table.
+        aux_pos = 0
+        for i in range(0, len(pass_list)):
+            if i == position:
+                aux_pos = self.db_driver.insert(db_config['pass_table'], {'uid':uid, 'password':pass_list[i]}, return_uid=True)
+                continue
+            self.db_driver.insert(db_config['pass_table'], {'uid':uid, 'password':pass_list[i]})
 
         return
 

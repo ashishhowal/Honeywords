@@ -4,6 +4,8 @@ Driver class for all MySQL queries. This has to be used by any class wanting to 
 
 from flask_mysqldb import MySQL
 
+from logger import *
+
 class DBDriver:
     def __init__(self, app, host, user, passwd, db):
         self.app = app
@@ -16,11 +18,13 @@ class DBDriver:
     # Returns the cursor and size of resultset
     def _exec(self, query):
         cursor = self.db.connection.cursor()
-        return (cursor, cursor.execute(query))
+        res = cursor.execute(query)
+        self.db.connection.commit()
+        return (cursor, res)
 
     # Insert will take arguement a 'row', which will have user_name, password
     # Row will be a key value pair, key being attribute name and value being the value
-    def insert(self, table, row):
+    def insert(self, table, row, return_uid=False):
         # Construct insert set
         ins_vec = """("""
         for r in row:
@@ -40,10 +44,17 @@ class DBDriver:
                 values += """','"""
         values += """')"""
 
-        # Construct query
+        # Construct query and execute
         query = """INSERT INTO """ + table + """ """ + ins_vec + """ VALUES"""+ values
         cur, res = self._exec(query)
-        return
+
+        # Retrieve the last user_id
+        if return_uid is True:
+            query = """SELECT * FROM users ORDER BY uid DESC LIMIT 1"""
+            cur, res = self._exec(query)
+            uid = cur.fetchall()[0][0]
+            return uid
+        
 
     # Return the resultset as a list
     # Use this method to retrieve a list of passwords with the same user_id from the password table

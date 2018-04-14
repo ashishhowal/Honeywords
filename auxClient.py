@@ -30,7 +30,7 @@ class AuxClient:
 
     def _send(self, data):
         status, sock = self._initSocket()
-        if status = True:
+        if status == True:
             sock.send(data)
             response = sock.recv(1024)
             return response
@@ -56,7 +56,7 @@ class AuxClient:
         # some logic
         return
 
-    def delete(self, uid)
+    def delete(self, uid):
         data = {
             'method':self.DELETE,
             'user_id':uid
