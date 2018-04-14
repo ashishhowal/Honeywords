@@ -10,12 +10,12 @@ from honeywords import *
 app = Flask(__name__)
 
 # dbDriver = DBDriver(app, 'localhost', 'root', 'root', 'honeywords')
+honeywords = Honeywords(app, open('config.json', 'r'))
 
 @app.route('/')
 @app.route('/index')
 def index():
     # cur, rs = dbDriver._exec('''SHOW TABLES''')
-    honeywords = Honeywords(app, open('config.json', 'r'))
     honeywords.addUser('swappy','bird')
     return "Pls work"
 
