@@ -1,5 +1,5 @@
 import json
-from os import path
+from os import path, remove
 from Crypto.Cipher import AES
 from Crypto import Random
 import hashlib
@@ -50,7 +50,6 @@ class AuxIO:
     # Add a row to the database
     def add(self, data):
         dict_db = self._secureOpen()
-        dlog(dict_db)
         dict_db.append(data)
         json_db = json.dumps(dict_db)
         dlog(json_db)
@@ -59,16 +58,31 @@ class AuxIO:
 
     # Get a specific row from the database. Returns the entire tuple
     def get(self, uid):
-        json_db = self._secureOpen()
-        dict_db = json.loads(json_db)
-
+        db = self._secureOpen()
         for d in db:
             if int(d['uid']) == uid:
                 return d
-
         return False
 
+    # Removing involves making a whole new database. I know :/.
+    def remove(self, uid):
+        # Logic to remove a tuple
+        db = self._secureOpen()
+        new_db = [d for d in db if d['uid'] != uid]
+        if len(db) == len(new_db):
+            return False
+        else:
+            j_db = json.dumps(new_db)
+            self._secureClose(str(j_db))
+            return True
+
+    # For debug purposes only.
+    def _dropdatabase(self):
+        remove(self.config['crypto']['db_file'])
+        return 
+
 if __name__ == '__main__':
-    conf = open('config.json', 'r').read()
-    conf = json.loads(conf)
-    aio = AuxIO(conf)
+    if _DEBUG is True:
+        conf = open('config.json', 'r').read()
+        conf = json.loads(conf)
+        aio = AuxIO(conf)

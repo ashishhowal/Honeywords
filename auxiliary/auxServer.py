@@ -35,7 +35,7 @@ class AuxServer:
             start_new_thread(self.handle_put, (req, conn, ))
         elif req['method'] == self.get_message:
             start_new_thread(self.handle_get, (req, conn, ))
-        elif req['delete'] == self.delete_message:
+        elif req['method'] == self.delete_message:
             start_new_thread(self.handle_delete, (req, conn, ))
 
         return
@@ -57,23 +57,33 @@ class AuxServer:
         return
 
     # GET Handler
-    def handle_get(self, req, conn):
+    def handle_get(self, d_req, conn):
         # Get Logic
-        dict_req = json.dumps(req)
-        uid = dict_req['uid']
+        uid = d_req['uid']
 
-        lock.acquire()
+        self.db_lock.acquire()
         res = self.aux_io.get(uid)
-        lock.release()
+        self.db_lock.release()
 
         if res is not False:
             response = {'status':'OK','pid':res['pid']}
             conn.send(json.dumps(response))
-        conn.send(json.dumps({'status':'FAIL'}))
+        else:
+            conn.send(json.dumps({'status':'FAIL'}))
         return
 
-    def handle_delete(self, req, conn):
-        # delete logic
+    def handle_delete(self, d_req, conn):
+        uid = d_req['uid']
+
+        self.db_lock.acquire()
+        res = self.aux_io.remove(uid)
+        self.db_lock.release()
+
+        if res is not False:
+            response = {'status':'OK'}
+            conn.send(json.dumps(response))
+        else:
+            conn.send(json.dumps({'status':'FAIL'}))
         return
 
     # Start server.
