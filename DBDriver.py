@@ -49,12 +49,15 @@ class DBDriver:
         cur, res = self._exec(query)
 
         # Retrieve the last user_id
-        if return_uid is True:
-            query = """SELECT * FROM users ORDER BY uid DESC LIMIT 1"""
-            cur, res = self._exec(query)
-            uid = cur.fetchall()[0][0]
-            return uid
+        return res
         
+    def getUserBasePid(self, uid):
+        query = """SELECT pid FROM passwords WHERE uid=""" + str(uid) + """ ORDER BY pid ASC LIMIT 1;""" 
+        cur, res = self._exec(query)
+        if res:
+            base_pid = cur.fetchall()[0][0]
+            return base_pid
+        return False
 
     # Return the resultset as a list
     # Use this method to retrieve a list of passwords with the same user_id from the password table

@@ -61,19 +61,19 @@ class Honeywords:
 
         # Write logic to insert into password table.
         aux_pos = 0
-        for i in range(0, len(pass_list)):
-            if i == position:
-                aux_pos = self.db_driver.insert(db_config['pass_table'], {'uid':uid, 'password':pass_list[i]}, return_uid=True)
-                continue
-            self.db_driver.insert(db_config['pass_table'], {'uid':uid, 'password':pass_list[i]})
+        for pwd in pass_list:
+            self.db_driver.insert(db_config['pass_table'], {'uid':uid, 'password':pwd})
 
-        return
+        # Aux insertion here.
+        base_pid = self.db_driver.getUserBasePid(uid)
+        dlog("base_pid: "+ str(base_pid))
+        dlog("aux_pos: "+str(aux_pos))
+        dlog("Pass Pos: " + str(base_pid + position))
+        status = self.aux_client.put(int(uid), int(base_pid + position))
+        if status is True:
+            return True
+        return False
 
     def validateUser(self):
         # Check with auxiliary server if the user password is correct.
         return
-
-    def _checkConnection(self):
-        # Check connection with Auxiliary server
-        return
-

@@ -28,6 +28,7 @@ class AuxServer:
         # Write logic to handle request
         conn.send(self.hello_message)
         req = conn.recv(1024)
+        dlog(req)
         req = json.loads(req)
         # Everything this point on is dictionary
 

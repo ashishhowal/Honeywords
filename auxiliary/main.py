@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+import traceback
 
 from auxServer import *
 
@@ -9,4 +10,8 @@ conf = open('config.json', 'r').read()
 
 server = AuxServer(json.loads(conf))
 
-server.serve_forever()
+try:
+    server.serve_forever()
+except Exception as e:
+    traceback.print_exc()
+    print e

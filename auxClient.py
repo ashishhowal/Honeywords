@@ -10,6 +10,9 @@ Protocol defined is like so:
         DELETEs data from the auxiliary database
 '''
 import socket
+import json
+
+from logger import _DEBUG, dlog
 
 class AuxClient:
     def __init__(self, host, port):
@@ -22,45 +25,71 @@ class AuxClient:
     def _initSocket(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((self.host, self.port))
-        greet = sock.recv()
-        if greet is 'hello':
+        greet = sock.recv(1024)
+        dlog(greet)
+        if greet == 'HELLO':
             return (True, sock)
         else:
             return (False, None)
 
-    def _send(self, data):
-        status, sock = self._initSocket()
-        if status == True:
-            sock.send(data)
-            response = sock.recv(1024)
-            return response
+    def _send(self, data, sock):
+        dlog(data)
+        data = str(data)
+        sock.send(data)
+        response = sock.recv(1024)
+        return (sock, response)
 
     def put(self, uid, pid):
-        data = {
-            'method':self.PUT,
-            'user_id':uid,
-            'pass_id':pid
-        }
-        data = json.loads(data)
-        self._send(data)
-        return
+        status, sock = self._initSocket()
+        dlog(status)
+        dlog(sock)
+        if status is True:
+            data = {
+                'method':self.PUT,
+                'uid':uid,
+                'pid':int(pid)
+            }
+            data = json.dumps(data)
+            sock, resp = self._send(data, sock)
+            d_resp = json.loads(resp)
+            sock.close()
+            if d_resp['status'] == "OK":
+                return True
+            elif d_resp['status'] == "FAIL":
+                return False
 
     def get(self, uid):
-        data = {
-            'method':self.GET,
-            'user_id':uid
-        }
-        data = json.loads(data)
-        resp = self._send(data)
-        resp = json.dumps(resp)
-        # some logic
-        return
+        status, sock = self._initSocket()
+        if status is True:
+            data = {
+                'method':self.GET,
+                'uid':int(uid)
+            }
+            data = json.dumps(data)
+            sock, resp = self._send(data, sock)
+            d_resp = json.loads(resp)
+            sock.close()
+            if d_resp['status'] == "OK":
+                return d_resp['pid']
+            elif d_resp['status'] == "FAIL":
+                return False
 
     def delete(self, uid):
-        data = {
-            'method':self.DELETE,
-            'user_id':uid
-        }
-        data = json.loads(data)
-        self._send(data)
-        return
+        status, sock = self._initSocket()
+        if status is True:
+            data = {
+                'method':self.DELETE,
+                'uid':int(uid)
+            }
+            data = json.dumps(data)
+            sock, resp = self._send(data, sock)
+            d_resp = json.loads(resp)
+            sock.close()
+            if d_resp['status'] == "OK":
+                return True
+            elif d_resp['status'] == "FAIL":
+                return False
+
+if __name__ == '__main__':
+    if _DEBUG is True:
+        aux_cl = AuxClient('localhost',7812)
