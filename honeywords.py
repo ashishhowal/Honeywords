@@ -76,4 +76,5 @@ class Honeywords:
 
     def validateUser(self):
         # Check with auxiliary server if the user password is correct.
+        
         return
