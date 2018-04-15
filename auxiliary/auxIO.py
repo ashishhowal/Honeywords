@@ -1,15 +1,16 @@
 import json
 from os import path
 from Crypto.Cipher import AES
+from Crypto import Random
 import hashlib
 
+from logger import *
+
+# Everything received here is )
 class AuxIO:
     def __init__(self, config):
         self.config = config
         # Crypto.
-        # Note that i am directly loading the key into the object and not saving it to a variable.
-        self.IV = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
-        self.crypt = AES.new(hashlib.sha256(config['crypto']['key']).digest(), AES.MODE_CBC, IV=self.IV)
         if not path.exists(config['crypto']['db_file']):
             self._initDatabase()
 
@@ -18,22 +19,26 @@ class AuxIO:
     def _secureOpen(self):
         crypto = self.config['crypto']
         db = open(crypto['db_file'],'rb').read()
-        plain = self.crypt.decrypt(db)
+        crypt = AES.new(hashlib.sha256(crypto['key']).digest(), AES.MODE_CBC, IV=db[:AES.block_size])
+        plain = crypt.decrypt(db[AES.block_size:])
         # Remove padded spaces
         plain = plain.rstrip()
+        dlog(plain)
         return json.loads(plain)
 
     # Send in data as string
     def _secureClose(self, data):
         crypto = self.config['crypto']
         data = str(data)
+        IV = Random.new().read(AES.block_size)
+        crypt = AES.new(hashlib.sha256(crypto['key']).digest(), AES.MODE_CBC, IV=IV)
         # Padding for the encryption
         while len(data) % 16 != 0:
             data += ' '
 
-        cipher_text = self.crypt.encrypt(data)
+        cipher_text = crypt.encrypt(data)
         with open(crypto['db_file'], 'wb') as f:
-            f.write(cipher_text)
+            f.write(IV + cipher_text)
         return
 
     # Initialize database if not exists
@@ -44,11 +49,12 @@ class AuxIO:
 
     # Add a row to the database
     def add(self, data):
-        json_db = self._secureOpen()
-        dict_db = json.loads(json_db)
+        dict_db = self._secureOpen()
+        dlog(dict_db)
         dict_db.append(data)
         json_db = json.dumps(dict_db)
-        _secureClose(str(json_db))
+        dlog(json_db)
+        self._secureClose(str(json_db))
         return
 
     # Get a specific row from the database. Returns the entire tuple
@@ -61,3 +67,8 @@ class AuxIO:
                 return d
 
         return False
+
+if __name__ == '__main__':
+    conf = open('config.json', 'r').read()
+    conf = json.loads(conf)
+    aio = AuxIO(conf)

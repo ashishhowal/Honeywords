@@ -1,14 +1,15 @@
 import socket 
-from thread import start_thread, allocate_lock
+from thread import start_new_thread, allocate_lock
 
 from auxIO import *
+from logger import *
 
 class AuxServer:
     def __init__(self, config):
         # Socket configurations
         self.server_socket = socket.socket()
         self.config = config
-        self.server_socket.bind((self.host,self.port))
+        self.server_socket.bind((config['server']['host'],config['server']['port']))
 
         # Server protocol messages
         self.hello_message = """HELLO"""
@@ -28,28 +29,28 @@ class AuxServer:
         conn.send(self.hello_message)
         req = conn.recv(1024)
         req = json.loads(req)
+        # Everything this point on is dictionary
 
         if req['method'] == self.put_message:
-            thread.start_thread(target = self.handle_put, (req, conn, ))
+            start_new_thread(self.handle_put, (req, conn, ))
         elif req['method'] == self.get_message:
-            thread.start_thread(target = self.handle_get, (req, conn, ))
+            start_new_thread(self.handle_get, (req, conn, ))
         elif req['delete'] == self.delete_message:
-            thread.start_thread(target = self.handle_delete, (req, conn, ))
+            start_new_thread(self.handle_delete, (req, conn, ))
 
         return
 
     # PUT Handler
-    def handle_put(self, req, conn):
+    def handle_put(self, d_req, conn):
         # Put logic
-        dict_req = json.loads(req)
         data = {
-            'uid':data['uid'],
-            'pid':data['pid']
+            'uid':d_req['uid'],
+            'pid':d_req['pid']
         }
 
-        lock.acquire()
+        self.db_lock.acquire()
         self.aux_io.add(data)
-        lock.release()
+        self.db_lock.release()
 
         response = {'status':'OK'}
         conn.send(json.dumps(response))
@@ -58,8 +59,8 @@ class AuxServer:
     # GET Handler
     def handle_get(self, req, conn):
         # Get Logic
-        dict_req = json.loads(req)
-        uid = data['uid']
+        dict_req = json.dumps(req)
+        uid = dict_req['uid']
 
         lock.acquire()
         res = self.aux_io.get(uid)
