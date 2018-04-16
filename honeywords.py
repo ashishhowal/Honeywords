@@ -18,7 +18,11 @@ class Honeywords:
         # functionality for aux server
         aux_config = self.config['aux']
         self.aux_client = AuxClient(aux_config['host'], aux_config['port'])
-        return
+        
+        # Primitives for user validation
+        self.attack_message = """ATTACK"""
+        self.success_message = """SUCCESS"""
+        self.fail_message ="""FAIL"""
     
     # Retrieves a random password from the given dictionary
     def _generateDecoy(self, config):
@@ -74,7 +78,31 @@ class Honeywords:
             return True
         return False
 
-    def validateUser(self):
+    # Query the database for uid based on user_name
+    # Query the database for pid based on password
+    # Query the Auxiliary server for real pid
+    # Check and return
+    def validateUser(self, user_name, password):
         # Check with auxiliary server if the user password is correct.
+        uid = self.db_driver.getUserID(user_name)
+        dlog("UID: " + str(uid))
+        pid = self.db_driver.getPassID(uid, password)
+
+        # If password is not in the database, it is a failed login attempt due to incorrect password
+        if pid is False:
+            return self.fail_message
         
-        return
+        # We are certain that the password exists, now if the aux_pid does not match the real pid, this is an attacker.
+        else:
+            # If password exists, check it's ID with the ID retrieved from auxiliary server
+            aux_pid = self.aux_client.get(uid)
+
+            # Legitimate login attempt.
+            if pid == aux_pid:
+                return self.success_message
+            # Attacker's attempt
+            else: 
+                return self.attack_message
+
+        # Should never reach here. But good practices and shiz.
+        return False

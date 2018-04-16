@@ -63,28 +63,31 @@ class DBDriver:
     # Use this method to retrieve a list of passwords with the same user_id from the password table
     def _project(self, table, condition = 1):
         query = """SELECT * FROM """ + table + """ WHERE """ + condition
+        dlog(query)
         cur, res = self._exec(query)
 
         if res != 0:
-            resultset = res.fetchall()
+            resultset = cur.fetchall()
             return resultset
         else:
             return False
 
     def getUserID(self, user_name):
         table = 'users'
-        condition = """user_name = """ + str(user_name)
+        condition = """user_name = '""" + str(user_name) + """'"""
         result = self._project(table, condition)
+        dlog(result)
         if result is not False:
-            return resultset[0][0]
+            return result[0][0]
         else:
             return False
 
     def getPassID(self, uid, password):
         table = 'passwords'
-        condition = """uid=""" + str(uid) + """ AND password=""" + str(password)
+        condition = """uid=""" + str(uid) + """ AND password='""" + str(password) + """'"""
         result = self._project(table, condition)
+        dlog(result)
         if result is not False:
-            return resultset[0][0]
+            return result[0][0]
         else:
             return False

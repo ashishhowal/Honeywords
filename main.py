@@ -21,6 +21,9 @@ def index():
 
 @app.route('/login')
 def login():
+    print honeywords.validateUser('swappy','bird')
+    print honeywords.validateUser('swappy','lol')
+    print honeywords.validateUser('swappy','201590')
     return "Login Page"
 
 @app.route('/verify', methods=['GET', 'POST'])
