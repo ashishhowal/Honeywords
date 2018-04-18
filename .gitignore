@@ -9,3 +9,4 @@ hnv/
 *.json
 test.py
 data/
+html/

@@ -16,7 +16,7 @@ honeywords = Honeywords(app, open('config.json', 'r'))
 @app.route('/index')
 def index():
     # cur, rs = dbDriver._exec('''SHOW TABLES''')
-    honeywords.addUser('swappy','bird')
+    # honeywords.addUser('swappy','bird')
     return "Pls work"
 
 @app.route('/login')
@@ -26,8 +26,10 @@ def login():
     print honeywords.validateUser('swappy','201590')
     return "Login Page"
 
-@app.route('/verify', methods=['GET', 'POST'])
-def verify():
+# Controller for honeywords
+@app.route('/hon_controller', methods=['POST'])
+def hon_controller():
+    
     return
 
 if __name__ == '__main__':
