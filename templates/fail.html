@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Failure</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/fail.css') }}">
+</head>
+<body>
+    <h1>[ Failed Login ]</h1>
+    <hr width=75%>
+    <p>
+        A failed login attempt detected for credentials:<br>
+        username: {{ username }} <br>
+        password: {{ password }}
+    </p>
+    <p>
+        This could have been caused by an incorrect username password combination, or by the fact that the given username does not exist in the database at all.
+    </p>
+    <p>
+        Head back to index page <a href="{{ url_for('index') }}"> here. </a>
+    </p>
+    <hr width=75%>
+</body>
+</html>

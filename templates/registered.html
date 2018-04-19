@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome, {{ username }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/success.css') }}">
+</head>
+<body>
+    <h1>[ Successful Registeration ]</h1>
+    <hr width=75%>
+    <h2>Hello, {{ username }}!</h2>
+    <p>
+        You have successfully registered with credentials:<br>
+        username: {{ username }} <br>
+        password: {{ password }}
+    </p>
+    <p>
+        Head back to index page <a href="{{ url_for('index') }}"> here. </a>
+    </p>
+    <hr width=75%>
+</body>
+</html>

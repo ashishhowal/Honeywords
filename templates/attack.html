@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ATTACK</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/attack.css') }}">
+</head>
+<body>
+    <h1>[ Attack Detected ]</h1>
+    <hr width=75%>
+    <p>
+        A Malicious login attempt was detected from the following credentials:<br>
+        username: {{ username }} <br>
+        password: {{ password }}
+    </p>
+    <p>
+        Head back to index page <a href="{{ url_for('index') }}"> here. </a>
+    </p>
+    <hr width=75%>
+</body>
+</html>

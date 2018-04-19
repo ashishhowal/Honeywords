@@ -25,7 +25,7 @@ def register():
     dlog(user)
     dlog(pwd)
     honeywords.addUser(user, pwd)    
-    return "Login Page"
+    return render_template("registered.html", username=user, password=pwd)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -34,11 +34,11 @@ def login():
     message = honeywords.validateUser(user, pwd)
 
     if message == honeywords.success_message:
-        return "Success"
+        return render_template("success.html",username=user,password=pwd)
     elif message == honeywords.fail_message:
-        return "Failed Login"
+        return render_template("fail.html",username=user,password=pwd)
     elif message == honeywords.attack_message:
-        return "Attack Detected"
+        return render_template("attack.html",username=user,password=pwd)
 
 if __name__ == '__main__':
     app.run(port=8080,debug = True)

@@ -5,7 +5,6 @@ hnv/
 *.pyc
 
 # Misc
-*.json
 test.py
 data/
 html/
