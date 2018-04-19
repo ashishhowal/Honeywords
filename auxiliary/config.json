@@ -1,0 +1,10 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": 7812
+    },
+    "crypto": {
+        "key": "a_very_strong_long_password",
+        "db_file": "database.crypt"
+    }
+}
