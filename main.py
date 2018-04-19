@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory
 from flask_mysqldb import MySQL
 
 from logger import _DEBUG, dlog
@@ -15,22 +15,30 @@ honeywords = Honeywords(app, open('config.json', 'r'))
 @app.route('/')
 @app.route('/index')
 def index():
-    # cur, rs = dbDriver._exec('''SHOW TABLES''')
-    # honeywords.addUser('swappy','bird')
-    return "Pls work"
+    # serve 
+    return render_template('index.html')
 
-@app.route('/login')
-def login():
-    print honeywords.validateUser('swappy','bird')
-    print honeywords.validateUser('swappy','lol')
-    print honeywords.validateUser('swappy','201590')
+@app.route('/register', methods=['POST'])
+def register():
+    user = request.form['username']
+    pwd = request.form['password']
+    dlog(user)
+    dlog(pwd)
+    honeywords.addUser(user, pwd)    
     return "Login Page"
 
-# Controller for honeywords
-@app.route('/hon_controller', methods=['POST'])
-def hon_controller():
-    
-    return
+@app.route('/login', methods=['POST'])
+def login():
+    user = request.form['username']
+    pwd = request.form['password']
+    message = honeywords.validateUser(user, pwd)
+
+    if message == honeywords.success_message:
+        return "Success"
+    elif message == honeywords.fail_message:
+        return "Failed Login"
+    elif message == honeywords.attack_message:
+        return "Attack Detected"
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(port=8080,debug = True)

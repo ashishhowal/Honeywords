@@ -24,7 +24,7 @@ class DBDriver:
 
     # Insert will take arguement a 'row', which will have user_name, password
     # Row will be a key value pair, key being attribute name and value being the value
-    def insert(self, table, row, return_uid=False):
+    def insert(self, table, row):
         # Construct insert set
         ins_vec = """("""
         for r in row:
